@@ -2,7 +2,11 @@ package med.voll.api.controller;
 
 import jakarta.validation.Valid;
 import med.voll.api.domain.consulta.*;
+import med.voll.api.domain.medico.DadosListagemMedico;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +19,14 @@ public class ConsultaController {
     private AgendaDeConsultas agenda;
 
     @Autowired
-    private ConsultaRepository consultaRepository;
+    private ConsultaRepository repository;
 
     @PostMapping
     @Transactional
     public ResponseEntity agendar(@RequestBody @Valid DadosAgendamentoConsulta dados){
 
-        agenda.agendar(dados);
-        return ResponseEntity.ok(new DadosDetalhamentoConsulta(null, null, null, null));
+        var dto = agenda.agendar(dados);
+        return ResponseEntity.ok(dto);
     }
 
     @PutMapping
@@ -31,5 +35,12 @@ public class ConsultaController {
 
         agenda.cancelar(dados);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DadosListagemConsulta>> listar(@PageableDefault(size = 10, sort = {"data"}) Pageable paginacao) {
+
+        Page<DadosListagemConsulta> page = repository.findAllByAtivaTrue(paginacao).map(DadosListagemConsulta::new);
+        return ResponseEntity.ok(page);
     }
 }
