@@ -6,6 +6,8 @@ import med.voll.api.domain.medico.Medico;
 import med.voll.api.domain.medico.MedicoRepository;
 import med.voll.api.domain.paciente.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -84,5 +86,15 @@ public class AgendaDeConsultas {
         } else {
             throw new ValidacaoException("Somente é permitido cancelar uma consulta com até 24h de antecedência.");
         }
+    }
+
+    public Page<DadosListagemConsulta> listar(Pageable paginacao){
+
+        return consultaRepository.findAllByAtivaTrue(paginacao).map(DadosListagemConsulta::new);
+    }
+
+    public List<Consulta> listar(){
+
+        return consultaRepository.findAllByAtivaTrue();
     }
 }

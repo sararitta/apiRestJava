@@ -42,7 +42,7 @@ public class ConsultaController {
     @GetMapping
     public ResponseEntity<Page<DadosListagemConsulta>> listar(@PageableDefault(size = 10, sort = {"data"}) Pageable paginacao) {
 
-        Page<DadosListagemConsulta> page = repository.findAllByAtivaTrue(paginacao).map(DadosListagemConsulta::new);
+        var page = agenda.listar(paginacao);
         return ResponseEntity.ok(page);
     }
 }
